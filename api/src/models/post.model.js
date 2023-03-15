@@ -15,6 +15,9 @@ const Post = new mongoose.Schema({
       ref: "UploadFile",
     },
   ],
+  location: {
+    type: Object,
+  },
 });
 
 module.exports = mongoose.model("Post", Post);

@@ -5,12 +5,25 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  TextField,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Home = ({ posts }) => {
   const navigate = useNavigate();
+
+  const [isSearch, setIsSearch] = useState(false);
+  const [searchWord, setSearchWord] = useState("");
+
+  const [postsSearch, setPostsSearch] = useState([]);
+
+  const handleSearch = () => {
+    console.log("search");
+    console.log(searchWord);
+  };
+
   return (
     <Box>
       <Button
@@ -32,6 +45,29 @@ const Home = ({ posts }) => {
       >
         Liste des posts
       </Typography>
+
+      <Box component="form">
+        <Typography variant="h3">Filtres</Typography>
+        <TextField
+          variant="outlined"
+          label="Search"
+          sx={{
+            mb: 4,
+          }}
+          onChange={(e) => setSearchWord(e.target.value)}
+        />
+
+        <Button
+          variant="contained"
+          sx={{
+            mb: 4,
+          }}
+          onClick={() => handleSearch()}
+        >
+          Rechercher
+        </Button>
+      </Box>
+
       <Box
         sx={{
           display: "flex",
@@ -41,7 +77,7 @@ const Home = ({ posts }) => {
       >
         {posts &&
           posts.map((post) => (
-            <Card sx={{ width: 345 }}>
+            <Card sx={{ width: 345 }} key={post._id}>
               <CardMedia
                 component="img"
                 alt={post.title}

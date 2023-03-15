@@ -27,10 +27,10 @@ const PostController = require("../controllers/post.controller.js");
 const multer = require("multer");
 const upload = multer({ dest: "uploads" });
 
-router.post("/post", upload.array("photos", 8), PostController.createPost);
+router.post("/post", upload.array("files", 8), PostController.createPost);
 router.get("/post", PostController.getPosts);
 router.get("/post/:id", PostController.getPost);
-router.put("/post/:id", upload.array("photos", 8), PostController.updatePost);
+router.put("/post/:id", upload.array("files", 8), PostController.updatePost);
 router.delete("/post/:id", PostController.deletePost);
 
 module.exports = router;

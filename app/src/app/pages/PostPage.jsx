@@ -1,7 +1,8 @@
-import { Box, Grid } from "@mui/material";
-import axios from "axios";
+import { Box, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import PostService from "../../src/services/post.service";
+import ModalPhoto from "../components/ModalPhoto";
 
 const PostPage = () => {
   const { id } = useParams();
@@ -9,15 +10,14 @@ const PostPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/post/${id}`)
-      .then((res) => {
-        setPost(res.data);
-        console.log(res.data);
-        setIsLoading(false);
-      })
-      .catch((err) => console.log(err));
+    if (id) getPost(id);
   }, [id]);
+
+  const getPost = async (id) => {
+    const post = await PostService.getPost(id);
+    setPost(post);
+    setIsLoading(false);
+  };
 
   return (
     <div>
@@ -25,41 +25,62 @@ const PostPage = () => {
         <div>Loading...</div>
       ) : (
         <Box>
-          <h1>{post.title}</h1>
-          <Grid container spacing={2}>
-            {post.uploadFiles.map((file) => {
-              if (post.uploadFiles.length === 1) {
-                return (
-                  <Grid
-                    item
-                    xs={12}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <img src={file.Location} alt="" />
+          <Typography variant="h2" color="initial">
+            {post.title}
+          </Typography>
+          <Grid
+            container
+            spacing={3}
+            sx={{
+              m: 3,
+            }}
+          >
+            {post?.uploadFiles?.length > 2 ? (
+              <Grid container spacing={3}>
+                <Grid item xs={6} md={6}>
+                  {post._id && post.uploadFiles.length > 0 && (
+                    <img
+                      style={{ width: "100%" }}
+                      src={post.uploadFiles[0]?.Location}
+                      alt=""
+                    />
+                  )}
+                </Grid>
+                <Grid item xs={6} md={6} container>
+                  <Grid item xs={12}>
+                    {post._id && post.uploadFiles.length > 0 && (
+                      <img
+                        style={{ width: "50%" }}
+                        src={post.uploadFiles[1]?.Location}
+                        alt=""
+                      />
+                    )}
                   </Grid>
-                );
-              } else {
-                return (
-                  <>
-                    <Grid item xs={6}>
-                      <img src="" alt="" />
-                    </Grid>
-                    <Box>
-                      <Grid item xs={3}>
-                        <img src="" alt="" />
-                      </Grid>
-                      <Grid item xs={3}>
-                        <img src="" alt="" />
-                      </Grid>
-                    </Box>
-                  </>
-                );
-              }
-            })}
+                  <Grid item xs={12}>
+                    {post._id && post.uploadFiles.length > 0 && (
+                      <img
+                        style={{ width: "50%" }}
+                        src={post.uploadFiles[2]?.Location}
+                        alt=""
+                      />
+                    )}
+                  </Grid>
+                </Grid>
+              </Grid>
+            ) : (
+              <Grid item xs={12} sm={6} md={4} lg={3}>
+                {post._id && post.uploadFiles.length > 0 && (
+                  <img src={post.uploadFiles[0]?.Location} alt="" />
+                )}
+              </Grid>
+            )}
           </Grid>
+
+          <Typography variant="h5" color="initial">
+            {post.content}
+          </Typography>
+
+          <ModalPhoto files={post.uploadFiles} />
         </Box>
       )}
     </div>

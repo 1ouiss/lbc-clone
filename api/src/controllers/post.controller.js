@@ -1,41 +1,36 @@
-const UploadFile = require("../models/uploadFile.model");
+const UploadFileModel = require("../models/uploadFile.model");
 const uploadOneFileInAws = require("../utils/aws-s3");
 const Post = require("../models/post.model");
 
 const PostController = {
   async createPost(req, res) {
-    const { title, content } = req.body;
-
-    console.log("data of post", req.body);
-    console.log("photos", req.files);
+    const { title, content, location } = req.body;
+    console.log(location);
 
     try {
       const post = new Post({
         title,
         content,
+        location: JSON.parse(location),
       });
 
       await post.save();
 
       await Promise.all(
-        req.files.map((file) => {
+        req.files.map(async (file) => {
           console.log("file", file);
-          uploadOneFileInAws(file, post._id).then(async (uploadFileAws) => {
-            console.log("uploadFileAws", uploadFileAws);
-            const uploadFile = new UploadFile({
-              ...uploadFileAws,
-              post: post._id,
-            });
+          const uploadFileAws = await uploadOneFileInAws(file, post._id);
 
-            await uploadFile.save();
-            post.uploadFiles.push(uploadFile._id);
-            await post.save();
+          const uploadFile = new UploadFileModel({
+            ...uploadFileAws,
+            post: post._id,
           });
+
+          await uploadFile.save();
+          post.uploadFiles.push(uploadFile._id);
         })
       );
-
-      // const uploadFileAws = await uploadOneFileInAws(req.files[0], post._id);
-      // console.log("uploadFileAws", uploadFileAws);
+      await post.save();
 
       res.status(201).json(post);
     } catch (error) {

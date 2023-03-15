@@ -4,15 +4,20 @@ import PostPageForm from "./app/pages/PostPageForm";
 import Home from "./app/pages/Home";
 import { Container } from "@mui/material";
 import PostPage from "./app/pages/PostPage";
+import PostService from "./src/services/post.service";
 
 function App() {
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/post")
-      .then((response) => response.json())
-      .then((data) => setPosts(data));
+    getPosts();
   }, []);
+
+  const getPosts = async () => {
+    const posts = await PostService.getAllPosts();
+    setPosts(posts);
+  };
+
   return (
     <Container
       sx={{
