@@ -37,24 +37,53 @@ const PostController = {
       res.status(409).send({ message: error.message });
     }
   },
+  // async getPosts(req, res) {
+  //   console.log("getPosts : ", req.query);
+
+  //   const { lat, lng } = req.query;
+
+  //   const maxDistance = 1;
+  //   try {
+  //     if (lat && lng) {
+  //       // filter posts with lat + or - 5 and lat + or - 0.6
+  //       const posts = await Post.find().populate("uploadFiles");
+  //       const filteredPosts = posts.filter((post) => {
+  //         return (
+  //           post.location.lat > lat - maxDistance / 6371 ||
+  //           post.location.lat < lat + maxDistance / 6371 ||
+  //           post.location.lng > lng - maxDistance / 6371 ||
+  //           post.location.lng < lng + maxDistance / 6371
+  //         );
+  //       });
+  //       res.status(200).json(filteredPosts);
+  //     } else {
+  //       const posts = await Post.find().populate("uploadFiles");
+  //       res.status(200).json(posts);
+  //     }
+  //   } catch (error) {
+  //     res.status(400).json({ message: error.message });
+  //   }
+  // },
   async getPosts(req, res) {
     console.log("getPosts : ", req.query);
 
     const { lat, lng } = req.query;
 
-    const maxDistance = 1;
+    const maxDistance = 10;
     try {
       if (lat && lng) {
-        // filter posts with lat + or - 5 and lat + or - 0.6
+        // Filter posts within maxDistance
         const posts = await Post.find().populate("uploadFiles");
         const filteredPosts = posts.filter((post) => {
-          console.log(post.location.lat, post.location.lng);
-          return (
-            post.location.lat > lat - maxDistance / 6371 ||
-            post.location.lat < lat + maxDistance / 6371 ||
-            post.location.lng > lng - maxDistance / 6371 ||
-            post.location.lng < lng + maxDistance / 6371
-          );
+          const distance =
+            Math.acos(
+              Math.sin((post.location.lat * Math.PI) / 180) *
+                Math.sin((lat * Math.PI) / 180) +
+                Math.cos((post.location.lat * Math.PI) / 180) *
+                  Math.cos((lat * Math.PI) / 180) *
+                  Math.cos(((lng - post.location.lng) * Math.PI) / 180)
+            ) * 6371; // Calculate distance in km
+          return distance <= maxDistance;
         });
         res.status(200).json(filteredPosts);
       } else {

@@ -73,6 +73,7 @@ const PostForm = () => {
             label="title"
             name="title"
             onChange={(e) => handleChange(e)}
+            value={newPost.title}
           />
           <TextField
             variant="outlined"
@@ -81,18 +82,24 @@ const PostForm = () => {
             multiline
             rows={4}
             onChange={(e) => handleChange(e)}
+            value={newPost.content}
           />
 
-          <AutocompleteInput setCredentials={setNewPost} />
+          <AutocompleteInput
+            setCredentials={setNewPost}
+            credentials={newPost}
+          />
 
-          <Button
-            variant="contained"
-            onClick={() => {
-              setActiveStep((prevActiveStep) => prevActiveStep + 1);
-            }}
-          >
-            Next
-          </Button>
+          <Box>
+            <Button
+              variant="contained"
+              onClick={() => {
+                setActiveStep((prevActiveStep) => prevActiveStep + 1);
+              }}
+            >
+              Suivant
+            </Button>
+          </Box>
         </>
       )}
 
@@ -105,9 +112,20 @@ const PostForm = () => {
             setFiles={setFiles}
           />
 
-          <Button variant="contained" onClick={(e) => handleSubmit(e)}>
-            Submit
-          </Button>
+          <Box>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                setActiveStep((prevActiveStep) => prevActiveStep - 1);
+              }}
+            >
+              Précédent
+            </Button>
+
+            <Button variant="contained" onClick={(e) => handleSubmit(e)}>
+              Submit
+            </Button>
+          </Box>
         </>
       )}
       {activeStep === 2 && success && (

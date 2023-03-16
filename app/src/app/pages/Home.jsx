@@ -16,12 +16,11 @@ import AutocompleteInput from "../components/AutocompleteInput";
 const Home = ({ posts, setPosts }) => {
   const navigate = useNavigate();
 
-  const [searchWord, setSearchWord] = useState({});
+  const [searchAddress, setSearchAddress] = useState({});
 
   const handleSearch = async () => {
-    console.log(searchWord);
-    const search = await PostService.filterPosts(searchWord.location);
-    setPosts(search);
+    const searchResult = await PostService.filterPosts(searchAddress.location);
+    setPosts(searchResult);
   };
 
   return (
@@ -48,7 +47,10 @@ const Home = ({ posts, setPosts }) => {
 
       <Box>
         <Typography variant="h6">Filtres</Typography>
-        <AutocompleteInput setCredentials={setSearchWord} />
+        <AutocompleteInput
+          setCredentials={setSearchAddress}
+          credentials={searchAddress}
+        />
         <Button
           variant="contained"
           onClick={() => {

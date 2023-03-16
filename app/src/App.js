@@ -18,6 +18,8 @@ function App() {
     setPosts(posts);
   };
 
+  if (!window.google) return null;
+
   return (
     <Container
       sx={{

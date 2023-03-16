@@ -1,8 +1,11 @@
 import { TextField } from "@mui/material";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
+import { AddressContext } from "../../src/context/AddressContext";
 
-const AutocompleteInput = ({ setCredentials }) => {
+const AutocompleteInput = ({ setCredentials, credentials }) => {
   const inputLocation = useRef(null);
+
+  const { address } = useContext(AddressContext);
 
   function AddAutoComplete() {
     const options = {
@@ -60,7 +63,14 @@ const AutocompleteInput = ({ setCredentials }) => {
                 component.types.includes("administrative_area_level_2")
               )?.long_name;
 
-            location.formatted_address = `${location?.streetNumber} ${location?.street}, ${location?.postalCode} ${location?.city}, ${location?.country}`;
+            if (
+              location?.street != undefined &&
+              location?.streetNumber != undefined
+            ) {
+              location.formatted_address = `${location?.streetNumber} ${location?.street}, ${location?.postalCode} ${location?.city}, ${location?.country}`;
+            } else {
+              location.formatted_address = `${location?.city}, ${location?.country}`;
+            }
 
             setCredentials((credentials) => {
               return { ...credentials, location };
@@ -82,6 +92,17 @@ const AutocompleteInput = ({ setCredentials }) => {
         label="location"
         name="location"
         inputRef={inputLocation}
+        value={
+          (credentials && credentials.location?.formatted_address) ||
+          (window.location.pathname === "/create-post" && address
+            ? address.formatted_address
+            : "")
+        }
+        onChange={(e) => {
+          setCredentials((credentials) => {
+            return { ...credentials, location: e.target.value };
+          });
+        }}
       />
     </>
   );
