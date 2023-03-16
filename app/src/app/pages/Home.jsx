@@ -8,20 +8,20 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import PostService from "../../src/services/post.service";
+import AutocompleteInput from "../components/AutocompleteInput";
 
-const Home = ({ posts }) => {
+const Home = ({ posts, setPosts }) => {
   const navigate = useNavigate();
 
-  const [isSearch, setIsSearch] = useState(false);
-  const [searchWord, setSearchWord] = useState("");
+  const [searchWord, setSearchWord] = useState({});
 
-  const [postsSearch, setPostsSearch] = useState([]);
-
-  const handleSearch = () => {
-    console.log("search");
+  const handleSearch = async () => {
     console.log(searchWord);
+    const search = await PostService.filterPosts(searchWord.location);
+    setPosts(search);
   };
 
   return (
@@ -46,25 +46,16 @@ const Home = ({ posts }) => {
         Liste des posts
       </Typography>
 
-      <Box component="form">
-        <Typography variant="h3">Filtres</Typography>
-        <TextField
-          variant="outlined"
-          label="Search"
-          sx={{
-            mb: 4,
-          }}
-          onChange={(e) => setSearchWord(e.target.value)}
-        />
-
+      <Box>
+        <Typography variant="h6">Filtres</Typography>
+        <AutocompleteInput setCredentials={setSearchWord} />
         <Button
           variant="contained"
-          sx={{
-            mb: 4,
+          onClick={() => {
+            handleSearch();
           }}
-          onClick={() => handleSearch()}
         >
-          Rechercher
+          Search
         </Button>
       </Box>
 

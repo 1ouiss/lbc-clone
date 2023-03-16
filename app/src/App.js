@@ -26,7 +26,10 @@ function App() {
     >
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home posts={posts} />} />
+          <Route
+            path="/"
+            element={<Home posts={posts} setPosts={setPosts} />}
+          />
           <Route path="/create-post" element={<PostPageForm />} />
           <Route path="/post/:id" element={<PostPage />} />
         </Routes>

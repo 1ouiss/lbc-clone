@@ -32,12 +32,20 @@ const deletePost = async (id) => {
   return response.data;
 };
 
+const filterPosts = async (location) => {
+  const response = await instance.get(
+    `${endPoint}?lat=${location.lat}&lng=${location.lng}`
+  );
+  return response.data;
+};
+
 const PostService = {
   getAllPosts,
   getPost,
   createPost,
   updatePost,
   deletePost,
+  filterPosts,
 };
 
 export default PostService;

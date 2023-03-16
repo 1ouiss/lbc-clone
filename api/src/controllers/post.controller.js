@@ -38,9 +38,29 @@ const PostController = {
     }
   },
   async getPosts(req, res) {
+    console.log("getPosts : ", req.query);
+
+    const { lat, lng } = req.query;
+
+    const maxDistance = 1;
     try {
-      const posts = await Post.find().populate("uploadFiles");
-      res.status(200).json(posts);
+      if (lat && lng) {
+        // filter posts with lat + or - 5 and lat + or - 0.6
+        const posts = await Post.find().populate("uploadFiles");
+        const filteredPosts = posts.filter((post) => {
+          console.log(post.location.lat, post.location.lng);
+          return (
+            post.location.lat > lat - maxDistance / 6371 ||
+            post.location.lat < lat + maxDistance / 6371 ||
+            post.location.lng > lng - maxDistance / 6371 ||
+            post.location.lng < lng + maxDistance / 6371
+          );
+        });
+        res.status(200).json(filteredPosts);
+      } else {
+        const posts = await Post.find().populate("uploadFiles");
+        res.status(200).json(posts);
+      }
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
@@ -68,6 +88,15 @@ const PostController = {
     try {
       await Post.deleteOne(req.params.id);
       res.status(200).json({ message: "Post deleted" });
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  },
+  async filterPosts(req, res) {
+    console.log("yoooo");
+    try {
+      const { lat, long } = req.query;
+      console.log(lat, long);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
