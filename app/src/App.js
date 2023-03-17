@@ -5,6 +5,7 @@ import Home from "./app/pages/Home";
 import { Container } from "@mui/material";
 import PostPage from "./app/pages/PostPage";
 import PostService from "./src/services/post.service";
+import UpdateForm from "./app/pages/UpdateForm";
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -34,6 +35,7 @@ function App() {
           />
           <Route path="/create-post" element={<PostPageForm />} />
           <Route path="/post/:id" element={<PostPage />} />
+          <Route path="/edit-post/:id" element={<UpdateForm />} />
         </Routes>
       </BrowserRouter>
     </Container>

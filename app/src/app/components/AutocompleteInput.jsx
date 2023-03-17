@@ -94,6 +94,7 @@ const AutocompleteInput = ({ setCredentials, credentials }) => {
         inputRef={inputLocation}
         value={
           (credentials && credentials.location?.formatted_address) ||
+          credentials.location ||
           (window.location.pathname === "/create-post" && address
             ? address.formatted_address
             : "")

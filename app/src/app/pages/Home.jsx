@@ -5,10 +5,9 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PostService from "../../src/services/post.service";
 import AutocompleteInput from "../components/AutocompleteInput";
@@ -92,7 +91,7 @@ const Home = ({ posts, setPosts }) => {
                     navigate("/post/" + post._id);
                   }}
                 >
-                  Learn More
+                  Voir plus
                 </Button>
               </CardActions>
             </Card>

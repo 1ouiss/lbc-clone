@@ -1,6 +1,6 @@
-import { Box, Grid, Typography } from "@mui/material";
+import { Box, Button, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PostService from "../../src/services/post.service";
 import ModalPhoto from "../components/ModalPhoto";
 
@@ -8,6 +8,8 @@ const PostPage = () => {
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (id) getPost(id);
@@ -81,6 +83,18 @@ const PostPage = () => {
           </Typography>
 
           <ModalPhoto files={post.uploadFiles} />
+
+          <Button
+            variant="outlined"
+            sx={{
+              mt: 4,
+            }}
+            onClick={(e) => {
+              navigate("/edit-post/" + post._id);
+            }}
+          >
+            Edit
+          </Button>
         </Box>
       )}
     </div>

@@ -1,5 +1,5 @@
 import { Box, Button, TextField } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import PostService from "../../src/services/post.service";
 import AutocompleteInput from "./AutocompleteInput";

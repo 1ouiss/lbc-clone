@@ -37,33 +37,6 @@ const PostController = {
       res.status(409).send({ message: error.message });
     }
   },
-  // async getPosts(req, res) {
-  //   console.log("getPosts : ", req.query);
-
-  //   const { lat, lng } = req.query;
-
-  //   const maxDistance = 1;
-  //   try {
-  //     if (lat && lng) {
-  //       // filter posts with lat + or - 5 and lat + or - 0.6
-  //       const posts = await Post.find().populate("uploadFiles");
-  //       const filteredPosts = posts.filter((post) => {
-  //         return (
-  //           post.location.lat > lat - maxDistance / 6371 ||
-  //           post.location.lat < lat + maxDistance / 6371 ||
-  //           post.location.lng > lng - maxDistance / 6371 ||
-  //           post.location.lng < lng + maxDistance / 6371
-  //         );
-  //       });
-  //       res.status(200).json(filteredPosts);
-  //     } else {
-  //       const posts = await Post.find().populate("uploadFiles");
-  //       res.status(200).json(posts);
-  //     }
-  //   } catch (error) {
-  //     res.status(400).json({ message: error.message });
-  //   }
-  // },
   async getPosts(req, res) {
     console.log("getPosts : ", req.query);
 
@@ -104,11 +77,40 @@ const PostController = {
   },
   async updatePost(req, res) {
     try {
+      console.log("req.body : ", req.body);
+      console.log("req.files : ", req.files);
       const post = await Post.findById(req.params.id);
       post.title = req.body.title;
       post.content = req.body.content;
-      const updatedPost = await post.save();
-      res.status(200).json(updatedPost);
+      post.location = JSON.parse(req.body.location);
+      post.uploadFiles = [];
+
+      await Promise.all(
+        req.files.map(async (file) => {
+          const uploadFileAws = await uploadOneFileInAws(file, post._id);
+
+          const uploadFile = new UploadFileModel({
+            ...uploadFileAws,
+            post: post._id,
+          });
+
+          await uploadFile.save();
+          post.uploadFiles.push(uploadFile._id);
+        })
+      );
+
+      if (typeof req.body.uploadFiles === "string") {
+        post.uploadFiles.push(req.body.uploadFiles);
+      } else if (typeof req.body.uploadFiles === "array") {
+        req.body.uploadFiles.map((file) => {
+          post.uploadFiles.push(file);
+        });
+      }
+
+      console.log("post.uploadFiles", post.uploadFiles);
+
+      await post.save();
+      res.status(200).json(post);
     } catch (error) {
       res.status(400).json({ message: error.message });
     }
